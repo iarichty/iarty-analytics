@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FiClock, FiHeart, FiShield, FiTrendingUp, FiArrowRight, FiInfo } from 'react-icons/fi';
+import { FiClock, FiShield, FiTrendingUp, FiArrowRight, FiInfo } from 'react-icons/fi';
 
 export default function Home() {
     const platforms = [
