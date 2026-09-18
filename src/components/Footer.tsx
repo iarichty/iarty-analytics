@@ -39,7 +39,7 @@ export default function Footer() {
                                     <img src="/img/icon.webp" alt="icon" className="object-cover w-full h-full" />
                                 </div>
                                 <span className="text-2xl font-black tracking-tighter text-gray-900 dark:text-white">
-                                    IARTY<span className="text-purple-600">.</span>
+                                    IARTY TOOLS
                                 </span>
                             </Link>
 
@@ -66,23 +66,22 @@ export default function Footer() {
 
                         {/* Right Side: Quick Links */}
                         <div className="grid grid-cols-2 gap-4">
-                            <FooterLink to="/instagram/how-analyze-works" icon={<FiInfo />} label="Panduan" />
-                            <FooterLink to="/privacy" icon={<FiShield />} label="Privasi" />
+                            <FooterLink to="/instagram/how-analyze-works" icon={<FiInfo />} label="Panduan Instagram" />
+                            <FooterLink to="/tiktok/how-analyze-works" icon={<FiShield />} label="Panduan TikTok" />
                             <FooterLink href="https://github.com/FIQTOR" icon={<FiGithub />} label="GitHub" isExternal />
-                            <FooterLink to="/" icon={<FiExternalLink />} label="Sitemap" />
+                            <FooterLink href="https://iarty.id" icon={<FiExternalLink />} label="iarty.id" isExternal />
                         </div>
                     </div>
 
                     {/* Bottom Section */}
                     <div className="mt-12 pt-8 border-t border-gray-200/50 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                            © {currentYear} IARTY GROUP. NO RIGHTS RESERVED.
+                            © {currentYear} PT IARTY TEKNOLOGI DIGITAL. NO RIGHTS RESERVED.
                         </p>
 
-                        <div className="flex gap-6">
-                            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" title="System Online"></span>
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Version 2.0.4-Beta</span>
-                        </div>
+                        <p>
+                            <a href="https://github.com/iarichty/iarty-analytics" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline decoration-2 underline-offset-4">Open Source</a> Project by <a href="https://fiqtor.com" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline decoration-2 underline-offset-4">fiqtor.com</a>
+                        </p>
                     </div>
                 </div>
             </motion.div>

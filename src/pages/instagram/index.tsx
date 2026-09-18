@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
     FiUploadCloud, FiUsers, FiUserPlus, FiUserX,
-    FiArrowLeft, FiSearch, FiInstagram, FiInfo
+    FiArrowLeft, FiSearch, FiInstagram, FiInfo,
+    FiArrowUp, FiArrowDown
 } from "react-icons/fi";
 import AppConfig from "@/config/AppConfig";
 import { Link } from "react-router-dom";
@@ -24,6 +25,7 @@ export default function InstagramAnalyze() {
     const [nonFollowing, setNonFollowing] = useState<InstagramUser[]>([]);
     const [activeTab, setActiveTab] = useState<'nonFollowbacks' | 'nonFollowing'>('nonFollowbacks');
     const [searchQuery, setSearchQuery] = useState("");
+    const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
     // Logika Pemrosesan File
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,13 +76,18 @@ export default function InstagramAnalyze() {
         }
     };
 
-    // Filter berdasarkan search query
+    // Filter berdasarkan search query + urutkan berdasarkan tanggal
     const filteredList = useMemo(() => {
         const list = activeTab === 'nonFollowbacks' ? nonFollowbacks : nonFollowing;
-        return list.filter(user =>
+        const filtered = list.filter(user =>
             user.string_list_data[0].href.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    }, [activeTab, nonFollowbacks, nonFollowing, searchQuery]);
+        return [...filtered].sort((a, b) => {
+            const ta = a.string_list_data[0].timestamp;
+            const tb = b.string_list_data[0].timestamp;
+            return sortOrder === 'newest' ? tb - ta : ta - tb;
+        });
+    }, [activeTab, nonFollowbacks, nonFollowing, searchQuery, sortOrder]);
 
     const formatDate = (timestamp: number) => {
         return new Date(timestamp * 1000).toLocaleDateString('id-ID', {
@@ -186,16 +193,34 @@ export default function InstagramAnalyze() {
                                             />
                                         </div>
 
-                                        {/* Search */}
-                                        <div className="relative">
-                                            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                                            <input
-                                                type="text"
-                                                placeholder="Cari username..."
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none w-full md:w-64 transition-all"
-                                            />
+                                        {/* Search & Sort */}
+                                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                            <div className="relative">
+                                                <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Cari username..."
+                                                    value={searchQuery}
+                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                    className="pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none w-full md:w-64 transition-all"
+                                                />
+                                            </div>
+
+                                            {/* Sort Filter */}
+                                            <div className="flex p-1 bg-slate-100 dark:bg-white/5 rounded-xl w-fit">
+                                                <SortButton
+                                                    active={sortOrder === 'newest'}
+                                                    onClick={() => setSortOrder('newest')}
+                                                    label="Terbaru"
+                                                    icon={<FiArrowDown className="w-3.5 h-3.5" />}
+                                                />
+                                                <SortButton
+                                                    active={sortOrder === 'oldest'}
+                                                    onClick={() => setSortOrder('oldest')}
+                                                    label="Terlama"
+                                                    icon={<FiArrowUp className="w-3.5 h-3.5" />}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -277,8 +302,57 @@ function StatsCard({ label, value, icon, color }: { label: string; value: number
                 {icon}
             </div>
             <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">{label}</p>
-            <h4 className="text-3xl font-black mt-1">{value}</h4>
+            <h4 className="text-3xl font-black mt-1 tabular-nums">
+                <AnimatedNumber value={value} />
+            </h4>
         </div>
+    );
+}
+
+// Angka yang menghitung naik saat data masuk
+function AnimatedNumber({ value }: { value: number }) {
+    const motionValue = useMotionValue(0);
+    const spring = useSpring(motionValue, { stiffness: 70, damping: 18, mass: 1 });
+    const display = useTransform(spring, (latest) =>
+        Math.round(latest).toLocaleString('id-ID')
+    );
+    const prev = useRef(0);
+
+    useEffect(() => {
+        motionValue.set(value);
+        prev.current = value;
+    }, [value, motionValue]);
+
+    return <motion.span>{display}</motion.span>;
+}
+
+function SortButton({
+    active, onClick, label, icon,
+}: {
+    active: boolean;
+    onClick: () => void;
+    label: string;
+    icon: React.ReactNode;
+}) {
+    return (
+        <button
+            onClick={onClick}
+            className={`relative flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                active
+                    ? 'text-purple-600 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+            }`}
+        >
+            {active && (
+                <motion.span
+                    layoutId="ig-sort-pill"
+                    className="absolute inset-0 bg-white dark:bg-white/10 shadow-sm rounded-lg -z-10"
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                />
+            )}
+            {icon}
+            {label}
+        </button>
     );
 }
 

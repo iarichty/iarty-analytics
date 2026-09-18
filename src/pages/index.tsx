@@ -133,22 +133,6 @@ export default function Home() {
                         </motion.div>
                     ))}
                 </div>
-
-                {/* Footer Section */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    className="mt-32 pt-12 border-t border-black/5 dark:border-white/5 text-center"
-                >
-                    <a
-                        href="https://saweria.co/fiqtor"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-2 text-sm text-gray-400 hover:text-pink-500 transition-colors"
-                    >
-                        Created with <FiHeart className="group-hover:fill-pink-500 transition-all duration-300" /> by <span className="font-bold underline underline-offset-4 decoration-pink-500/30 group-hover:decoration-pink-500">Fiqtor</span>
-                    </a>
-                </motion.div>
             </main>
         </div>
     );

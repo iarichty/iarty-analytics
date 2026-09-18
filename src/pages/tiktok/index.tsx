@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
     FiUploadCloud,
     FiHelpCircle, FiArrowLeft, FiSearch, FiExternalLink, FiBarChart2,
-    FiUsers, FiUserMinus
+    FiUsers, FiUserMinus, FiArrowUp, FiArrowDown
 } from "react-icons/fi";
 import AppConfig from "@/config/AppConfig";
 import { Link } from "react-router-dom";
@@ -29,6 +29,7 @@ export default function TikTokAnalyze() {
     const [nonFollowing, setNonFollowing] = useState<TikTokUser[]>([]);
     const [activeTab, setActiveTab] = useState<'nonFollowbacks' | 'nonFollowing'>('nonFollowbacks');
     const [searchQuery, setSearchQuery] = useState("");
+    const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -73,10 +74,15 @@ export default function TikTokAnalyze() {
 
     const filteredList = useMemo(() => {
         const list = activeTab === 'nonFollowbacks' ? nonFollowbacks : nonFollowing;
-        return list.filter(user =>
+        const filtered = list.filter(user =>
             user.UserName.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    }, [activeTab, nonFollowbacks, nonFollowing, searchQuery]);
+        return [...filtered].sort((a, b) => {
+            const ta = new Date(a.Date).getTime() || 0;
+            const tb = new Date(b.Date).getTime() || 0;
+            return sortOrder === 'newest' ? tb - ta : ta - tb;
+        });
+    }, [activeTab, nonFollowbacks, nonFollowing, searchQuery, sortOrder]);
 
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString('id-ID', {
@@ -195,16 +201,34 @@ export default function TikTokAnalyze() {
                                         </button>
                                     </div>
 
-                                    {/* Search */}
-                                    <div className="relative">
-                                        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                                        <input
-                                            type="text"
-                                            placeholder="Cari Username..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="bg-gray-100 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl pl-12 pr-6 py-3 outline-none focus:border-[#fe2c55] focus:ring-2 focus:ring-[#fe2c55]/20 transition-all w-full md:w-80 text-gray-900 dark:text-white placeholder:text-gray-400"
-                                        />
+                                    {/* Search & Sort */}
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                        <div className="relative">
+                                            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                                            <input
+                                                type="text"
+                                                placeholder="Cari Username..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="bg-gray-100 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl pl-12 pr-6 py-3 outline-none focus:border-[#fe2c55] focus:ring-2 focus:ring-[#fe2c55]/20 transition-all w-full md:w-80 text-gray-900 dark:text-white placeholder:text-gray-400"
+                                            />
+                                        </div>
+
+                                        {/* Sort Filter */}
+                                        <div className="flex p-1.5 bg-gray-100 dark:bg-black/40 rounded-2xl w-fit border border-gray-200 dark:border-white/5">
+                                            <SortButton
+                                                active={sortOrder === 'newest'}
+                                                onClick={() => setSortOrder('newest')}
+                                                label="TERBARU"
+                                                icon={<FiArrowDown className="w-3.5 h-3.5" />}
+                                            />
+                                            <SortButton
+                                                active={sortOrder === 'oldest'}
+                                                onClick={() => setSortOrder('oldest')}
+                                                label="TERLAMA"
+                                                icon={<FiArrowUp className="w-3.5 h-3.5" />}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -276,9 +300,56 @@ function StatCard({ label, value, accent, icon, isRatio }: {
                 <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{label}</p>
                 <span className="text-lg" style={{ color: accent }}>{icon}</span>
             </div>
-            <h3 className="text-4xl font-black italic" style={{ color: accent }}>
-                {isRatio ? value : Number(value).toLocaleString()}
+            <h3 className="text-4xl font-black italic tabular-nums" style={{ color: accent }}>
+                {isRatio
+                    ? value
+                    : <AnimatedNumber value={Number(value)} />}
             </h3>
         </div>
+    );
+}
+
+// Angka yang menghitung naik saat data masuk
+function AnimatedNumber({ value }: { value: number }) {
+    const motionValue = useMotionValue(0);
+    const spring = useSpring(motionValue, { stiffness: 70, damping: 18, mass: 1 });
+    const display = useTransform(spring, (latest) =>
+        Math.round(latest).toLocaleString('id-ID')
+    );
+
+    useEffect(() => {
+        motionValue.set(value);
+    }, [value, motionValue]);
+
+    return <motion.span>{display}</motion.span>;
+}
+
+function SortButton({
+    active, onClick, label, icon,
+}: {
+    active: boolean;
+    onClick: () => void;
+    label: string;
+    icon: React.ReactNode;
+}) {
+    return (
+        <button
+            onClick={onClick}
+            className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-colors ${
+                active
+                    ? 'text-black'
+                    : 'text-gray-500 hover:text-gray-800 dark:hover:text-white'
+            }`}
+        >
+            {active && (
+                <motion.span
+                    layoutId="tt-sort-pill"
+                    className="absolute inset-0 bg-[#25f4ee] shadow-lg rounded-xl -z-10"
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                />
+            )}
+            {icon}
+            {label}
+        </button>
     );
 }
