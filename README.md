@@ -1,73 +1,172 @@
-# React + TypeScript + Vite
+# IARTY Analytics
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Analisis koneksi media sosial Anda (**Instagram** & **TikTok**) dengan aman, cepat, dan transparan — tanpa menyimpan data pribadi. Semua proses berjalan **100% di sisi klien (browser)**, file ZIP Anda tidak pernah dikirim ke server mana pun.
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&logoColor=white)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ✨ Fitur
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 📊 **Instagram Insights** — temukan siapa yang tidak follback & belum Anda follow.
+- 🎵 **TikTok Insights** — analisis follower/following dalam hitungan detik.
+- 🌓 **Dark / Light mode** dengan animasi _circle bloom_ saat berpindah tema.
+- 🧭 **Navbar** dengan indikator menu aktif yang meluncur halus (smooth sliding pill).
+- 🔎 **Filter urut Terbaru / Terlama** + pencarian username.
+- 🔢 **Animasi numbering** (count-up) saat data selesai diproses.
+- 🔒 **Privasi terjaga** — pemrosesan ZIP sepenuhnya terjadi di browser (JSZip).
+- 📱 **Responsif** untuk mobile & desktop.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Cara Install (untuk clone dari GitHub)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Prasyarat
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Pastikan sudah terpasang di komputer Anda:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Tool    | Versi minimal | Cek dengan        |
+| ------- | ------------- | ----------------- |
+| Node.js | `>= 18`       | `node -v`         |
+| npm     | `>= 9`        | `npm -v`          |
+| Git     | terbaru       | `git --version`   |
+
+> Disarankan memakai Node.js versi **LTS terbaru** (mis. v20 / v22).
+
+### 2. Clone repository
+
+```bash
+git clone https://github.com/iarichty/iarty-analytics.git
+cd iarty-analytics
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3. Install dependency
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+> Jika ingin instalasi yang bersih & dapat direproduksi (sesuai `package-lock.json`):
+>
+> ```bash
+> npm ci
+> ```
+
+### 4. Jalankan mode development
+
+```bash
+npm run dev
+```
+
+Buka browser pada alamat yang ditampilkan di terminal (biasanya **http://localhost:5173**).
+
+### 5. Build untuk production
+
+```bash
+npm run build
+```
+
+Hasil build akan berada di folder `dist/`.
+
+### 6. Preview hasil build (opsional)
+
+```bash
+npm run preview
+```
+
+---
+
+## 📜 Daftar Script
+
+| Perintah          | Fungsi                                              |
+| ----------------- | --------------------------------------------------- |
+| `npm run dev`     | Menjalankan server development dengan HMR.          |
+| `npm run build`   | Type-check (`tsc -b`) + build produksi ke `dist/`.  |
+| `npm run preview` | Menjalankan preview dari hasil build produksi.      |
+| `npm run lint`    | Menjalankan ESLint ke seluruh proyek.               |
+
+---
+
+## 🗂️ Struktur Proyek
+
+```
+iarty-analytics/
+├─ public/                 # Aset statis (ikon, gambar)
+├─ src/
+│  ├─ components/          # Komponen UI (Navbar, Footer, dll.)
+│  ├─ config/              # Konfigurasi aplikasi
+│  ├─ context/             # React Context (ThemeContext)
+│  ├─ layouts/             # Layout utama (MainLayout)
+│  ├─ pages/               # Routing berbasis file (vite-plugin-pages)
+│  │  ├─ instagram/        #   → /instagram
+│  │  ├─ tiktok/           #   → /tiktok
+│  │  └─ [...all].tsx      #   → halaman 404
+│  ├─ App.tsx
+│  └─ main.tsx
+├─ vite.config.ts
+├─ tailwind (via @tailwindcss/vite)
+└─ package.json
+```
+
+> Routing memakai **`vite-plugin-pages`** — setiap file di `src/pages` otomatis menjadi route.
+
+---
+
+## 🛠️ Tech Stack
+
+- **React 19** + **TypeScript**
+- **Vite** (build tool) + **vite-plugin-pages** (file-based routing)
+- **Tailwind CSS v4**
+- **Framer Motion** (animasi)
+- **React Router DOM v7**
+- **JSZip** (pemrosesan file arsip di browser)
+- **React Icons**
+- **Redux Toolkit**, **Recharts**, **Chart.js**, **GSAP**, **Three.js** (siap pakai)
+
+---
+
+## ☁️ Deploy
+
+Proyek ini sudah menyertakan `vercel.json` dengan rewrites SPA, sehingga paling mudah di-deploy ke **Vercel**:
+
+1. Push repository ini ke GitHub.
+2. Import project di [vercel.com](https://vercel.com).
+3. Vercel otomatis mendeteksi Vite — gunakan pengaturan default:
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. Deploy. Selesai! 🎉
+
+> Untuk platform lain (Netlify, GitHub Pages, dll.), pastikan build output `dist/` dan terapkan SPA fallback ke `index.html`.
+
+---
+
+## 🔐 Privasi
+
+Semua analisis file ZIP (data Instagram/TikTok) diproses **sepenuhnya di browser** menggunakan JSZip. Tidak ada data pribadi yang dikirim atau disimpan di server.
+
+---
+
+## 🤝 Kontribusi
+
+1. Fork repository ini.
+2. Buat branch fitur: `git checkout -b fitur/nama-fitur`.
+3. Commit perubahan: `git commit -m "feat: tambah fitur X"`.
+4. Push: `git push origin fitur/nama-fitur`.
+5. Buka Pull Request.
+
+---
+
+## 📄 Lisensi
+
+© IARTY GROUP. No rights reserved.
+
+---
+
+## 🔗 Tautan
+
+- Website: [iarty.id](https://iarty.id)
+- Developer: [fiqtor.com](https://fiqtor.com)
+- GitHub: [github.com/iarichty](https://github.com/iarichty)
