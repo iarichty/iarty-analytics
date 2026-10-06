@@ -50,7 +50,7 @@ export async function exportAllAsZip(
     // A small readme so the bundle is self-explanatory.
     zip.file(
         'README.txt',
-        `IARTY Analytics export (${platform})\n` +
+        `IARTY Tools export (${platform})\n` +
             `Generated: ${new Date().toISOString()}\n` +
             `All data was processed locally in the browser.\n`,
     );
@@ -89,7 +89,7 @@ export function exportSummaryImage(
     // Header.
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 40px Inter, system-ui, sans-serif';
-    ctx.fillText('IARTY Analytics', 60, 90);
+    ctx.fillText('IARTY Tools', 60, 90);
 
     ctx.fillStyle = '#a855f7';
     ctx.font = '600 22px Inter, system-ui, sans-serif';

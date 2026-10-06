@@ -141,7 +141,7 @@ export default function HowTikTokWorks() {
     return (
         <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f0f13] text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
             <HelmetContainer
-                title="How to get your TikTok data | IARTY Analytics"
+                title="How to get your TikTok data | IARTY Tools"
                 path="/tiktok/how-analyze-works"
             />
             {/* Background */}

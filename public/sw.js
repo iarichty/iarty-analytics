@@ -1,5 +1,5 @@
 /*
- * IARTY Analytics service worker.
+ * IARTY Tools service worker.
  *
  * Strategy:
  *  - App shell (navigation requests): network-first, falling back to the cached
@@ -9,7 +9,7 @@
  * All analysis happens client-side, so caching is purely about app delivery —
  * no user data ever passes through here.
  */
-const CACHE = 'iarty-v1';
+const CACHE = 'iarty-tools-v1';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {

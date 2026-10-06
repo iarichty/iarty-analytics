@@ -44,7 +44,7 @@ const en: Dict = {
     'common.copied': 'Copied!',
 
     'home.title1': 'IARTY',
-    'home.title2': 'Analytics',
+    'home.title2': 'Tools',
     'home.tagline': 'The professional toolkit for social insights.',
     'home.noAccess': 'No account access required.',
     'home.analyzeAccount': 'Analyze Account',
@@ -156,7 +156,7 @@ const id: Dict = {
     'common.copied': 'Tersalin!',
 
     'home.title1': 'IARTY',
-    'home.title2': 'Analytics',
+    'home.title2': 'Tools',
     'home.tagline': 'Perangkat profesional untuk insight media sosial.',
     'home.noAccess': 'Tanpa perlu akses akun.',
     'home.analyzeAccount': 'Analisis Akun',

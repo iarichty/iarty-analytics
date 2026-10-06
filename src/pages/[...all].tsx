@@ -5,7 +5,7 @@ import HelmetContainer from '@/components/HelmetContainer';
 const NotFound = () => {
     return (
         <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6 dark:bg-neutral-950">
-            <HelmetContainer title="Page Not Found | IARTY Analytics" />
+            <HelmetContainer title="Page Not Found | IARTY Tools" />
             <div className="text-center">
                 <div className="relative mb-8 inline-block">
                     <div className="absolute inset-0 animate-pulse bg-green-500 opacity-20 blur-3xl" />

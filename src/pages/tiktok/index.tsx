@@ -13,7 +13,7 @@ import { useI18n } from '@/context/useI18n';
 function buildConfig(t: (key: string) => string): AnalyzePageConfig {
     return {
         platform: 'tiktok',
-        seoTitle: 'TikTok Insights | IARTY Analytics',
+        seoTitle: 'TikTok Insights | IARTY Tools',
         path: '/tiktok',
         wrapperClassName:
             'min-h-screen bg-[#fafafa] text-gray-900 transition-colors duration-300 selection:bg-[#fe2c55]/20 dark:bg-[#0f0f13] dark:text-white',

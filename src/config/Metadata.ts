@@ -30,6 +30,8 @@ interface MetadataConfigType {
     };
     twitter: {
         card: string;
+        site?: string;
+        creator?: string;
         title: string;
         description: string;
         images: string[];
@@ -50,23 +52,24 @@ interface MetadataConfigType {
         shortcut: string;
         apple: Array<{ url: string; sizes?: string; type?: string }>;
     };
-    alternates: { canonical?: string };
+    alternates: { canonical?: string; languages?: Record<string, string> };
     category: string;
 }
 
-const DOMAIN = "https://analytics.iarty.id";
+const DOMAIN = "https://tools.iarty.biz.id";
 
 const MetadataConfig: MetadataConfigType = {
     // Basic metadata
-    title: "IARTY Analytics - Social Media Analytics Tool",
-    creator: "IARTY Analytics",
+    title: "IARTY Tools - Social Media Analytics & Utilities",
+    creator: "IARTY Tools",
     metadataBase: DOMAIN,
     description:
         "Analyze your Instagram and TikTok data easily. Get insights about your followers, following, and engagement metrics in one place.",
 
     // Keywords for SEO
     keywords: [
-        "iarty analytics",
+        "iarty tools",
+        "iarty",
         "instagram analytics",
         "tiktok analytics",
         "social media analytics",
@@ -76,11 +79,12 @@ const MetadataConfig: MetadataConfigType = {
         "instagram insights",
         "tiktok insights",
         "social media data analysis",
+        "online tools",
     ],
 
     // Author information
     authors: {
-        name: "IARTY Analytics",
+        name: "IARTY Tools",
         url: DOMAIN,
     },
 
@@ -88,8 +92,8 @@ const MetadataConfig: MetadataConfigType = {
     openGraph: {
         type: "website",
         url: DOMAIN,
-        siteName: "IARTY Analytics",
-        title: "IARTY Analytics - Social Media Analytics Tool",
+        siteName: "IARTY Tools",
+        title: "IARTY Tools - Social Media Analytics & Utilities",
         description:
             "Powerful analytics tool for Instagram and TikTok. Analyze your social media data and get valuable insights.",
         locale: "id-ID",
@@ -99,7 +103,7 @@ const MetadataConfig: MetadataConfigType = {
                 url: `${DOMAIN}/og-image.jpg`,
                 width: 1200,
                 height: 630,
-                alt: "IARTY Analytics - Social Media Analytics Tool",
+                alt: "IARTY Tools - Social Media Analytics & Utilities",
                 type: "image/jpeg",
             },
         ],
@@ -109,7 +113,9 @@ const MetadataConfig: MetadataConfigType = {
     // Twitter card metadata
     twitter: {
         card: "summary_large_image",
-        title: "IARTY Analytics - Social Media Analytics Tool",
+        site: "@iartyid",
+        creator: "@iartyid",
+        title: "IARTY Tools - Social Media Analytics & Utilities",
         description:
             "Analyze your Instagram and TikTok data with powerful insights and metrics.",
         images: [`${DOMAIN}/og-image.jpg`],
@@ -141,9 +147,14 @@ const MetadataConfig: MetadataConfigType = {
         ],
     },
 
-    // Canonical URL
+    // Canonical URL + language alternates
     alternates: {
         canonical: DOMAIN,
+        languages: {
+            "en": DOMAIN,
+            "id": DOMAIN,
+            "x-default": DOMAIN,
+        },
     },
 
     // Website category

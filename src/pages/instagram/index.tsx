@@ -14,7 +14,7 @@ import { useI18n } from '@/context/useI18n';
 function buildConfig(t: (key: string) => string): AnalyzePageConfig {
     return {
         platform: 'instagram',
-        seoTitle: 'Instagram Insights | IARTY Analytics',
+        seoTitle: 'Instagram Insights | IARTY Tools',
         path: '/instagram',
         wrapperClassName:
             'min-h-screen bg-[#fafafa] text-slate-900 transition-colors duration-300 dark:bg-[#0a0a0c] dark:text-slate-100',

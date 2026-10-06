@@ -137,7 +137,7 @@ export default function HowInstagramWorks() {
     return (
         <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0c] text-slate-900 dark:text-slate-100 transition-colors duration-300">
             <HelmetContainer
-                title="How to get your Instagram data | IARTY Analytics"
+                title="How to get your Instagram data | IARTY Tools"
                 path="/instagram/how-analyze-works"
             />
             {/* Background Decor - Synchronized with Main Page */}

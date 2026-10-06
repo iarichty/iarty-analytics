@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://analytics.iarty.id/</loc>
+        <loc>https://tools.iarty.biz.id/</loc>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://analytics.iarty.id/instagram</loc>
+        <loc>https://tools.iarty.biz.id/instagram</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://analytics.iarty.id/instagram/how-analyze-works</loc>
+        <loc>https://tools.iarty.biz.id/instagram/how-analyze-works</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://analytics.iarty.id/tiktok</loc>
+        <loc>https://tools.iarty.biz.id/tiktok</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://analytics.iarty.id/tiktok/how-analyze-works</loc>
+        <loc>https://tools.iarty.biz.id/tiktok/how-analyze-works</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>

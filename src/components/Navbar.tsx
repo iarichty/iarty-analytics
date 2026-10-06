@@ -141,7 +141,7 @@ export default function Navbar() {
                             <img src="/img/icon.webp" alt="icon" className="object-cover w-full h-full" />
                         </div>
                         <span className="hidden sm:block text-lg font-black tracking-tight text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                            TOOLS
+                            IARTY TOOLS
                         </span>
                     </Link>
 

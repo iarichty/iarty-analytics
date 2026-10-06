@@ -1,4 +1,4 @@
-# IARTY Analytics
+# IARTY Tools
 
 Analisis koneksi media sosial Anda (**Instagram** & **TikTok**) dengan aman, cepat, dan transparan — tanpa menyimpan data pribadi. Semua proses berjalan **100% di sisi klien (browser)**, file ZIP Anda tidak pernah dikirim ke server mana pun.
 
@@ -46,8 +46,8 @@ Pastikan sudah terpasang di komputer Anda:
 ### 2. Clone repository
 
 ```bash
-git clone https://github.com/iarichty/iarty-analytics.git
-cd iarty-analytics
+git clone https://github.com/iarichty/iarty-tools.git
+cd iarty-tools
 ```
 
 ### 3. Install dependency
@@ -103,7 +103,7 @@ npm run preview
 ## 🗂️ Struktur Proyek
 
 ```
-iarty-analytics/
+iarty-tools/
 ├─ public/                 # Aset statis (ikon, gambar) + manifest PWA & sw.js
 ├─ src/
 │  ├─ components/          # Komponen UI (Navbar, Footer, ErrorBoundary, dll.)
@@ -216,6 +216,6 @@ Dirilis di bawah lisensi **MIT** — lihat file [LICENSE](./LICENSE).
 
 ## 🔗 Tautan
 
-- Website: [iarty.id](https://iarty.id)
+- Website: [tools.iarty.biz.id](https://tools.iarty.biz.id)
 - Developer: [fiqtor.com](https://fiqtor.com)
 - GitHub: [github.com/iarichty](https://github.com/iarichty)

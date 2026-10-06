@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://analytics.iarty.id/sitemap.xml
+Sitemap: https://tools.iarty.biz.id/sitemap.xml

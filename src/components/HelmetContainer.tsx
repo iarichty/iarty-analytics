@@ -15,10 +15,44 @@ interface HelmetContainerProps {
  * Open Graph data reflect the current route.
  */
 export default function HelmetContainer({ children, title, path }: HelmetContainerProps) {
-    const { openGraph, twitter, robots, icons, authors, metadataBase } = MetadataConfig;
+    const { openGraph, twitter, robots, icons, authors, metadataBase, alternates } =
+        MetadataConfig;
     const seoTitle = title ?? MetadataConfig.title;
     const ogImage = openGraph.images[0];
     const canonical = path ? `${metadataBase}${path}` : metadataBase;
+
+    // Structured data helps search engines understand the site and its pages.
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'WebSite',
+                '@id': `${metadataBase}/#website`,
+                url: metadataBase,
+                name: 'IARTY Tools',
+                description: MetadataConfig.description,
+                inLanguage: 'en',
+            },
+            {
+                '@type': 'SoftwareApplication',
+                name: 'IARTY Tools',
+                url: canonical,
+                applicationCategory: 'UtilitiesApplication',
+                operatingSystem: 'Any',
+                description: openGraph.description,
+                offers: {
+                    '@type': 'Offer',
+                    price: '0',
+                    priceCurrency: 'IDR',
+                },
+                publisher: {
+                    '@type': 'Organization',
+                    name: 'PT IARTY TEKNOLOGI DIGITAL',
+                    url: metadataBase,
+                },
+            },
+        ],
+    };
 
     return (
         <Helmet>
@@ -29,6 +63,10 @@ export default function HelmetContainer({ children, title, path }: HelmetContain
             <meta name="keywords" content={MetadataConfig.keywords.join(', ')} />
             <meta name="author" content={authors.name} />
             <link rel="canonical" href={canonical} />
+            {alternates.languages &&
+                Object.entries(alternates.languages).map(([lang, href]) => (
+                    <link key={lang} rel="alternate" hrefLang={lang} href={href} />
+                ))}
             <meta name="theme-color" content="#0a0a0c" />
             <meta
                 name="robots"
@@ -49,19 +87,30 @@ export default function HelmetContainer({ children, title, path }: HelmetContain
                     <meta property="og:image" content={ogImage.url} />
                     <meta property="og:image:width" content={String(ogImage.width)} />
                     <meta property="og:image:height" content={String(ogImage.height)} />
+                    <meta property="og:image:type" content={ogImage.type} />
                     <meta property="og:image:alt" content={ogImage.alt} />
                 </>
             )}
 
             {/* Twitter / X */}
             <meta name="twitter:card" content={twitter.card} />
+            {twitter.site && <meta name="twitter:site" content={twitter.site} />}
+            {twitter.creator && <meta name="twitter:creator" content={twitter.creator} />}
             <meta name="twitter:title" content={seoTitle} />
             <meta name="twitter:description" content={twitter.description} />
-            {twitter.images[0] && <meta name="twitter:image" content={twitter.images[0]} />}
+            {twitter.images[0] && (
+                <>
+                    <meta name="twitter:image" content={twitter.images[0]} />
+                    {ogImage && <meta name="twitter:image:alt" content={ogImage.alt} />}
+                </>
+            )}
 
             {/* Icons */}
             <link rel="icon" type="image/x-icon" href={icons.icon[0]?.url ?? '/favicon.ico'} />
             <link rel="apple-touch-icon" href={icons.apple[0]?.url} />
+
+            {/* Structured data */}
+            <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
         </Helmet>
     );
 }

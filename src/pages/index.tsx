@@ -19,7 +19,7 @@ export default function Home() {
     const { t } = useI18n();
     return (
         <div className="relative min-h-screen overflow-hidden bg-[#fafafa] transition-colors duration-500 dark:bg-[#08080a]">
-            <HelmetContainer title="IARTY Analytics — Social Media Analytics Tool" />
+            <HelmetContainer title="IARTY Tools — Social Media Analytics & Utilities" />
 
             {/* Ambient background */}
             <div className="absolute inset-0 z-0" aria-hidden>
