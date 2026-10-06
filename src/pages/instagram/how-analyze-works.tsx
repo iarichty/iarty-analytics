@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { FiDownload, FiSettings, FiUser, FiClock, FiCheck, FiUpload, FiArrowLeft, FiInfo, FiExternalLink } from 'react-icons/fi';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import HelmetContainer from '@/components/HelmetContainer';
 
 type Language = 'en' | 'id';
 
 type Step = {
-    icon: any;
+    icon: ReactNode;
     title: string;
     description: string;
     color: string;
@@ -17,11 +18,13 @@ type TranslationType = {
     title: string;
     subtitle: string;
     note: string;
+    cta_ready: string;
+    cta_open: string;
     steps: Step[];
 };
 
 export default function HowInstagramWorks() {
-    const [language, setLanguage] = useState<Language>('id');
+    const [language, setLanguage] = useState<Language>('en');
 
     const translations: Record<Language, TranslationType> = {
         en: {
@@ -29,6 +32,8 @@ export default function HowInstagramWorks() {
             title: 'How to Get Your Data',
             subtitle: 'Follow these steps to securely download your Instagram connections data.',
             note: 'Note: Instagram usually takes 5-30 minutes to prepare your file, but it can take longer depending on your account size.',
+            cta_ready: 'I ALREADY HAVE THE FILE',
+            cta_open: 'OPEN INSTAGRAM',
             steps: [
                 {
                     icon: <FiSettings />,
@@ -73,6 +78,8 @@ export default function HowInstagramWorks() {
             title: 'Cara Ambil Data',
             subtitle: 'Ikuti langkah-langkah berikut untuk mendapatkan data koneksi Instagram Anda dengan aman.',
             note: 'Catatan: Instagram biasanya membutuhkan 5-30 menit untuk menyiapkan file, namun bisa lebih lama tergantung ukuran akun Anda.',
+            cta_ready: 'SAYA SUDAH PUNYA FILE',
+            cta_open: 'BUKA INSTAGRAM',
             steps: [
                 {
                     icon: <FiSettings />,
@@ -129,6 +136,10 @@ export default function HowInstagramWorks() {
 
     return (
         <div className="min-h-screen bg-[#fafafa] dark:bg-[#0a0a0c] text-slate-900 dark:text-slate-100 transition-colors duration-300">
+            <HelmetContainer
+                title="How to get your Instagram data | IARTY Analytics"
+                path="/instagram/how-analyze-works"
+            />
             {/* Background Decor - Synchronized with Main Page */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-40 dark:opacity-20">
                 <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-400 rounded-full blur-[120px]" />
@@ -224,8 +235,8 @@ export default function HowInstagramWorks() {
                             to="/instagram"
                             className="flex items-center gap-2 px-10 py-5 bg-linear-to-r from-purple-600 to-orange-500 text-white rounded-3xl font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-purple-500/20"
                         >
-                            <FiUpload className="w-5 h-5" />
-                            SAYA SUDAH PUNYA FILE
+                            <FiUpload className="w-5 h-5" aria-hidden />
+                            {translations[language].cta_ready}
                         </Link>
                         <a
                             href="https://accountscenter.instagram.com/your_information_and_permissions"
@@ -233,7 +244,7 @@ export default function HowInstagramWorks() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-10 py-5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl font-black hover:bg-slate-50 dark:hover:bg-white/10 transition-all"
                         >
-                            BUKA INSTAGRAM <FiExternalLink />
+                            {translations[language].cta_open} <FiExternalLink aria-hidden />
                         </a>
                     </div>
                 </motion.div>

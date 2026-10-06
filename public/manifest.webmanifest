@@ -1,0 +1,27 @@
+{
+    "name": "IARTY Analytics",
+    "short_name": "IARTY",
+    "description": "Analyze your Instagram and TikTok connections — 100% in your browser.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#08080a",
+    "theme_color": "#0a0a0c",
+    "lang": "en",
+    "categories": ["utilities", "social"],
+    "icons": [
+        {
+            "src": "/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/img/icon.webp",
+            "sizes": "192x192",
+            "type": "image/webp",
+            "purpose": "any maskable"
+        }
+    ]
+}

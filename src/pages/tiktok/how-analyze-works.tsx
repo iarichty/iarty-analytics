@@ -4,13 +4,14 @@ import {
     FiUpload, FiArrowLeft, FiInfo,
     FiExternalLink, FiFileText
 } from 'react-icons/fi';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import HelmetContainer from '@/components/HelmetContainer';
 
 type Language = 'en' | 'id';
 
 type Step = {
-    icon: any;
+    icon: ReactNode;
     title: string;
     description: string;
     color: string;
@@ -27,7 +28,7 @@ type TranslationType = {
 };
 
 export default function HowTikTokWorks() {
-    const [language, setLanguage] = useState<Language>('id');
+    const [language, setLanguage] = useState<Language>('en');
 
     const translations: Record<Language, TranslationType> = {
         en: {
@@ -139,6 +140,10 @@ export default function HowTikTokWorks() {
 
     return (
         <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f0f13] text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
+            <HelmetContainer
+                title="How to get your TikTok data | IARTY Analytics"
+                path="/tiktok/how-analyze-works"
+            />
             {/* Background */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-[-10%] left-[-10%] w-160 h-160 bg-[#fe2c55] rounded-full blur-[150px] opacity-[0.04] dark:opacity-[0.07]" />

@@ -1,11 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme } from '@/context/useTheme';
+import { useI18n } from '@/context/useI18n';
+import { LOCALES, LOCALE_SHORT, LOCALE_LABELS, type Locale } from '@/lib/i18n';
 import { useRef, useState } from 'react';
-import { FiMenu, FiX, FiInstagram, FiMusic, FiHome, FiSun, FiMoon } from 'react-icons/fi';
+import { FiMenu, FiX, FiInstagram, FiMusic, FiHome, FiSun, FiMoon, FiGlobe } from 'react-icons/fi';
 
 function ThemeToggle() {
     const { theme, toggleTheme } = useTheme();
+    const { t } = useI18n();
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         const rect = e.currentTarget.getBoundingClientRect();
@@ -18,7 +21,7 @@ function ThemeToggle() {
     return (
         <button
             onClick={handleClick}
-            aria-label="Toggle theme"
+            aria-label={t('nav.theme')}
             className="relative p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
         >
             <AnimatePresence mode="wait" initial={false}>
@@ -50,15 +53,74 @@ function ThemeToggle() {
     );
 }
 
+function LanguageSwitcher() {
+    const { locale, setLocale, t } = useI18n();
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setOpen((v) => !v)}
+                aria-label={t('nav.language')}
+                aria-expanded={open}
+                aria-haspopup="listbox"
+                className="flex items-center gap-1.5 rounded-full p-2 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/10"
+            >
+                <FiGlobe size={18} />
+                <span className="text-xs font-black">{LOCALE_SHORT[locale]}</span>
+            </button>
+            <AnimatePresence>
+                {open && (
+                    <>
+                        <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setOpen(false)}
+                            aria-hidden
+                        />
+                        <motion.ul
+                            role="listbox"
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            className="absolute right-0 z-20 mt-2 w-44 overflow-hidden rounded-2xl border border-black/5 bg-white py-1 shadow-xl dark:border-white/10 dark:bg-gray-900"
+                        >
+                            {LOCALES.map((l: Locale) => (
+                                <li key={l}>
+                                    <button
+                                        role="option"
+                                        aria-selected={locale === l}
+                                        onClick={() => {
+                                            setLocale(l);
+                                            setOpen(false);
+                                        }}
+                                        className={`w-full px-4 py-2 text-left text-sm font-bold transition-colors hover:bg-purple-50 dark:hover:bg-white/5 ${
+                                            locale === l
+                                                ? 'text-purple-600 dark:text-purple-400'
+                                                : 'text-gray-600 dark:text-gray-300'
+                                        }`}
+                                    >
+                                        {LOCALE_LABELS[l]}
+                                    </button>
+                                </li>
+                            ))}
+                        </motion.ul>
+                    </>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
     const navRef = useRef<HTMLDivElement>(null);
+    const { t } = useI18n();
 
     const menuItems = [
-        { href: '/', label: 'Home', icon: FiHome },
-        { href: '/instagram', label: 'Instagram', icon: FiInstagram },
-        { href: '/tiktok', label: 'TikTok', icon: FiMusic },
+        { href: '/', label: t('nav.home'), icon: FiHome },
+        { href: '/instagram', label: t('nav.instagram'), icon: FiInstagram },
+        { href: '/tiktok', label: t('nav.tiktok'), icon: FiMusic },
     ];
 
     const activeHref = menuItems
@@ -94,6 +156,7 @@ export default function Navbar() {
                                 <Link
                                     key={item.href}
                                     to={item.href}
+                                    aria-current={isActive ? 'page' : undefined}
                                     className={`relative flex items-center space-x-2 px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-300 ${isActive
                                         ? 'text-purple-600 dark:text-white'
                                         : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-white'
@@ -106,7 +169,7 @@ export default function Navbar() {
                                             transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                                         />
                                     )}
-                                    <item.icon className="w-4 h-4" />
+                                    <item.icon className="w-4 h-4" aria-hidden />
                                     <span>{item.label}</span>
                                 </Link>
                             );
@@ -114,12 +177,16 @@ export default function Navbar() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
+                        <LanguageSwitcher />
                         <ThemeToggle />
 
                         {/* Mobile menu toggle */}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            aria-label={isMobileMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+                            aria-expanded={isMobileMenuOpen}
+                            aria-controls="mobile-menu"
                             className="md:hidden p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                         >
                             {isMobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
@@ -131,6 +198,7 @@ export default function Navbar() {
                 <AnimatePresence>
                     {isMobileMenuOpen && (
                         <motion.div
+                            id="mobile-menu"
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}

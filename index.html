@@ -3,14 +3,51 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/img/icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | IARTY Analytics</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <title>IARTY Analytics — Social Media Analytics Tool</title>
+  <meta name="description"
+    content="Analyze your Instagram and TikTok data easily. Get insights about your followers and following — processed entirely in your browser." />
+  <meta name="theme-color" content="#0a0a0c" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://analytics.iarty.id" />
+
+  <!-- Open Graph / Twitter (static fallback; react-helmet updates these per route) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="IARTY Analytics" />
+  <meta property="og:title" content="IARTY Analytics — Social Media Analytics Tool" />
+  <meta property="og:description"
+    content="Analyze your Instagram and TikTok data easily. Insights on followers and following, processed locally." />
+  <meta property="og:url" content="https://analytics.iarty.id" />
+  <meta property="og:image" content="https://analytics.iarty.id/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://analytics.iarty.id/og-image.jpg" />
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="IARTY" />
+
+  <!-- Set the theme before first paint to avoid a flash of the wrong colour scheme -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved === 'light' || saved === 'dark'
+          ? saved
+          : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.classList.add(theme);
+        if (theme === 'dark') document.documentElement.style.colorScheme = 'dark';
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
-    rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap"
+    rel="stylesheet" />
 </head>
 
 <body>

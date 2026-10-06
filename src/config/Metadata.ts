@@ -95,7 +95,8 @@ const MetadataConfig: MetadataConfigType = {
         locale: "id-ID",
         images: [
             {
-                url: "/og-image.jpg",
+                // Open Graph requires an absolute URL.
+                url: `${DOMAIN}/og-image.jpg`,
                 width: 1200,
                 height: 630,
                 alt: "IARTY Analytics - Social Media Analytics Tool",
@@ -111,7 +112,7 @@ const MetadataConfig: MetadataConfigType = {
         title: "IARTY Analytics - Social Media Analytics Tool",
         description:
             "Analyze your Instagram and TikTok data with powerful insights and metrics.",
-        images: ["/og-image.jpg"],
+        images: [`${DOMAIN}/og-image.jpg`],
     },
 
     // Search engine crawler settings

@@ -44,7 +44,7 @@ export default function Footer() {
                             </Link>
 
                             <p className="text-gray-500 dark:text-gray-400 font-medium max-w-sm mx-auto md:mx-0">
-                                Analisis koneksi media sosial Anda dengan aman, cepat, dan transparan tanpa menyimpan data pribadi.
+                                Analyze your social media connections safely, quickly, and transparently — without ever storing your personal data.
                             </p>
 
                             <div className="flex items-center justify-center md:justify-start gap-2 text-sm font-bold text-gray-600 dark:text-gray-300">
