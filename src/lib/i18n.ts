@@ -29,6 +29,8 @@ const en: Dict = {
     'nav.home': 'Home',
     'nav.instagram': 'Instagram',
     'nav.tiktok': 'TikTok',
+    'nav.threads': 'Threads',
+    'nav.x': 'X (Twitter)',
     'nav.theme': 'Toggle theme',
     'nav.language': 'Change language',
     'nav.openMenu': 'Open menu',
@@ -65,8 +67,8 @@ const en: Dict = {
     'home.offline': 'Works fully offline',
     'home.comingSoon': 'Coming soon',
     'home.threads.desc':
-        'Analyze your Threads connections from your Instagram export — on the way.',
-    'home.x.desc': 'Bring your X (Twitter) archive for the same insight — coming soon.',
+        'Analyze your Threads connections from your Accounts Center export — instantly.',
+    'home.x.desc': 'Bring your X (Twitter) archive for the same insight — no account access.',
 
     'upload.ig.title': 'Upload your ZIP file',
     'upload.ig.desc':
@@ -76,6 +78,14 @@ const en: Dict = {
     'upload.tt.desc':
         'Make sure you have downloaded your data from TikTok in JSON format.',
     'upload.tt.button': 'Select file now',
+    'upload.threads.title': 'Upload your Threads ZIP file',
+    'upload.threads.desc':
+        'Upload the .zip you downloaded from Meta Accounts Center (Threads connections).',
+    'upload.threads.button': 'Choose ZIP file',
+    'upload.x.title': 'Upload your X (Twitter) archive',
+    'upload.x.desc':
+        'Drop the twitter-*.zip archive you received from X, right here.',
+    'upload.x.button': 'Choose archive',
     'upload.progress.reading': 'Reading file…',
     'upload.progress.unzipping': 'Unzipping…',
     'upload.progress.parsing': 'Analyzing connections…',
@@ -141,6 +151,8 @@ const id: Dict = {
     'nav.home': 'Beranda',
     'nav.instagram': 'Instagram',
     'nav.tiktok': 'TikTok',
+    'nav.threads': 'Threads',
+    'nav.x': 'X (Twitter)',
     'nav.theme': 'Ganti tema',
     'nav.language': 'Ganti bahasa',
     'nav.openMenu': 'Buka menu',
@@ -177,8 +189,8 @@ const id: Dict = {
     'home.offline': 'Bekerja sepenuhnya offline',
     'home.comingSoon': 'Segera hadir',
     'home.threads.desc':
-        'Analisis koneksi Threads Anda dari export Instagram — segera hadir.',
-    'home.x.desc': 'Bawa arsip X (Twitter) Anda untuk insight serupa — segera hadir.',
+        'Analisis koneksi Threads Anda dari export Accounts Center — secara instan.',
+    'home.x.desc': 'Bawa arsip X (Twitter) Anda untuk insight serupa — tanpa akses akun.',
 
     'upload.ig.title': 'Unggah file ZIP Anda',
     'upload.ig.desc':
@@ -188,6 +200,14 @@ const id: Dict = {
     'upload.tt.desc':
         'Pastikan Anda sudah mengunduh data dari TikTok dalam format JSON.',
     'upload.tt.button': 'Pilih file sekarang',
+    'upload.threads.title': 'Unggah file ZIP Threads Anda',
+    'upload.threads.desc':
+        'Unggah file .zip yang Anda unduh dari Pusat Akun Meta (koneksi Threads).',
+    'upload.threads.button': 'Pilih file ZIP',
+    'upload.x.title': 'Unggah arsip X (Twitter) Anda',
+    'upload.x.desc':
+        'Tarik arsip twitter-*.zip yang Anda terima dari X ke sini.',
+    'upload.x.button': 'Pilih arsip',
     'upload.progress.reading': 'Membaca file…',
     'upload.progress.unzipping': 'Mengekstrak…',
     'upload.progress.parsing': 'Menganalisis koneksi…',

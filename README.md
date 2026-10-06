@@ -13,6 +13,8 @@ Analisis koneksi media sosial Anda (**Instagram** & **TikTok**) dengan aman, cep
 
 - 📊 **Instagram Insights** — temukan siapa yang tidak follback & belum Anda follow.
 - 🎵 **TikTok Insights** — analisis follower/following dalam hitungan detik.
+- 🧵 **Threads Insights** — analisis koneksi Threads dari export Accounts Center.
+- 🐦 **X (Twitter) Insights** — baca arsip X Anda dan lihat siapa yang tidak follback.
 - 🕵️ **Deteksi Unfollower** — snapshot otomatis dibandingkan tiap analisis: lihat siapa yang berhenti mengikuti, follower baru, dan perubahan follow Anda.
 - 🧠 **Insight Lanjutan** — mutual, fans, follow terlama, rata-rata lama follow, dan **grafik pertumbuhan follower** (SVG native, tanpa library chart).
 - 📤 **Export** — unduh per-tab sebagai **CSV**, bundel semua sebagai **ZIP**, atau simpan **ringkasan sebagai gambar PNG**.
@@ -183,8 +185,7 @@ Arsitektur sudah disiapkan untuk platform tambahan:
    (mirip `src/pages/instagram/index.tsx`).
 5. Tambahkan ikon di `public/img/`.
 
-Platform yang direncanakan (Threads, X) sudah tampil sebagai kartu *coming soon*
-di halaman utama — cukup ubah `comingSoon` menjadi `false` setelah selesai.
+Platform yang direncanakan sudah memiliki implementasi lengkap (Threads & X) dan aktif di halaman utama. Untuk menambah platform lain, ikuti langkah di atas.
 
 ---
 

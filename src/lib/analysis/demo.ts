@@ -35,18 +35,39 @@ function makeUser(rand: () => number, platform: string, i: number): ConnectionUs
     const username = `${adj}_${noun}${i}`;
     const daysAgo = Math.floor(rand() * 900) + 5;
     const timestamp = Date.now() - daysAgo * 86_400_000;
-    const href =
-        platform === 'instagram'
-            ? `https://www.instagram.com/${username}`
-            : `https://www.tiktok.com/@${username}`;
+    const href = platformHref(platform, username);
     return { username, href, timestamp };
 }
 
+/** Profile URL for a demo user, matching each platform's public domain. */
+function platformHref(platform: string, username: string): string {
+    switch (platform) {
+        case 'instagram':
+            return `https://www.instagram.com/${username}`;
+        case 'tiktok':
+            return `https://www.tiktok.com/@${username}`;
+        case 'threads':
+            return `https://www.threads.net/@${username}`;
+        case 'x':
+            return `https://x.com/${username}`;
+        default:
+            return `https://example.com/${username}`;
+    }
+}
+
+/** Distinct, reproducible PRNG seeds per platform so demo data differs. */
+const DEMO_SEEDS: Record<string, number> = {
+    instagram: 1337,
+    tiktok: 4242,
+    threads: 2024,
+    x: 5150,
+};
+
 /** Build a complete, coherent `AnalysisResult` for demo purposes. */
 export function generateDemoResult(
-    platform: 'instagram' | 'tiktok' = 'instagram',
+    platform: 'instagram' | 'tiktok' | 'threads' | 'x' = 'instagram',
 ): AnalysisResult {
-    const rand = mulberry32(platform === 'instagram' ? 1337 : 4242);
+    const rand = mulberry32(DEMO_SEEDS[platform] ?? 1337);
 
     const followerCount = 220;
     const followingCount = 300;

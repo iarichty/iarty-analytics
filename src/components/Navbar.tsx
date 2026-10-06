@@ -4,7 +4,7 @@ import { useTheme } from '@/context/useTheme';
 import { useI18n } from '@/context/useI18n';
 import { LOCALES, LOCALE_SHORT, LOCALE_LABELS, type Locale } from '@/lib/i18n';
 import { useRef, useState } from 'react';
-import { FiMenu, FiX, FiInstagram, FiMusic, FiHome, FiSun, FiMoon, FiGlobe } from 'react-icons/fi';
+import { FiMenu, FiX, FiInstagram, FiMusic, FiHome, FiSun, FiMoon, FiGlobe, FiAtSign } from 'react-icons/fi';
 
 function ThemeToggle() {
     const { theme, toggleTheme } = useTheme();
@@ -121,6 +121,8 @@ export default function Navbar() {
         { href: '/', label: t('nav.home'), icon: FiHome },
         { href: '/instagram', label: t('nav.instagram'), icon: FiInstagram },
         { href: '/tiktok', label: t('nav.tiktok'), icon: FiMusic },
+        { href: '/threads', label: t('nav.threads'), icon: FiAtSign },
+        { href: '/x', label: t('nav.x'), icon: FiAtSign },
     ];
 
     const activeHref = menuItems

@@ -4,6 +4,10 @@ import {
     instagramUsernameFromHref,
     analyzeInstagram,
     analyzeTikTok,
+    analyzeThreads,
+    analyzeX,
+    buildXAccountMap,
+    parseXArchive,
     mergeInstagramResults,
     filterAndSort,
     computeInsights,
@@ -12,7 +16,14 @@ import {
     toCsv,
     AnalysisError,
 } from './parsers';
-import type { AnalysisResult, ConnectionUser, InstagramRawUser, TikTokRawData } from './types';
+import type {
+    AnalysisResult,
+    ConnectionUser,
+    InstagramRawUser,
+    TikTokRawData,
+    XRawAccount,
+    XRawEntry,
+} from './types';
 
 /** Helper to build a raw Instagram row. */
 function igRow(username: string, href?: string, timestamp = 0): InstagramRawUser {
@@ -112,6 +123,115 @@ describe('analyzeTikTok', () => {
 
     it('throws an AnalysisError when both lists are empty', () => {
         expect(() => analyzeTikTok(makeData([], []))).toThrow(AnalysisError);
+    });
+});
+
+describe('analyzeThreads', () => {
+    /** Threads shares Instagram's raw row shape. */
+    const threadsRow = (username: string, timestamp = 0): InstagramRawUser => ({
+        string_list_data: [
+            { href: `https://www.instagram.com/${username}`, timestamp, value: username },
+        ],
+    });
+
+    it('builds threads.net profile links from the username', () => {
+        const result = analyzeThreads([threadsRow('alice')], []);
+        expect(result.followers[0].href).toBe('https://www.threads.net/@alice');
+    });
+
+    it('detects non-followbacks in both directions', () => {
+        const result = analyzeThreads(
+            [threadsRow('alice'), threadsRow('bob')],
+            [threadsRow('alice'), threadsRow('carol')],
+        );
+        expect(result.nonFollowbacks.map((u) => u.username)).toEqual(['carol']);
+        expect(result.notFollowingBack.map((u) => u.username)).toEqual(['bob']);
+    });
+
+    it('converts second-based timestamps to milliseconds', () => {
+        const result = analyzeThreads([threadsRow('alice', 1600000000)], []);
+        expect(result.followers[0].timestamp).toBe(1600000000000);
+    });
+});
+
+describe('buildXAccountMap', () => {
+    it('maps accountId to username and skips malformed rows', () => {
+        const accounts: XRawAccount[] = [
+            { account: { accountId: '1', username: 'alice' } },
+            { account: { accountId: '2' } },
+            { account: { accountId: '3', username: 'carol' } },
+        ];
+        const map = buildXAccountMap(accounts);
+        expect(map.get('1')).toBe('alice');
+        expect(map.get('2')).toBeUndefined();
+        expect(map.get('3')).toBe('carol');
+    });
+});
+
+describe('analyzeX', () => {
+    const follower = (id: string): XRawEntry => ({ follower: { accountId: id } });
+    const following = (id: string): XRawEntry => ({ following: { accountId: id } });
+
+    it('resolves usernames through the account map and links to x.com', () => {
+        const map = new Map([
+            ['1', 'alice'],
+            ['2', 'bob'],
+        ]);
+        const result = analyzeX([follower('1')], [following('2')], map);
+        expect(result.followers[0].username).toBe('alice');
+        expect(result.followers[0].href).toBe('https://x.com/alice');
+        expect(result.following[0].username).toBe('bob');
+    });
+
+    it('falls back to the raw accountId when unmapped', () => {
+        const result = analyzeX([follower('999')], [], new Map());
+        expect(result.followers[0].username).toBe('999');
+    });
+
+    it('detects non-followbacks across resolved usernames', () => {
+        const map = new Map([
+            ['1', 'alice'],
+            ['2', 'bob'],
+            ['3', 'carol'],
+        ]);
+        const result = analyzeX(
+            [follower('1'), follower('2')],
+            [following('1'), following('3')],
+            map,
+        );
+        expect(result.nonFollowbacks.map((u) => u.username)).toEqual(['carol']);
+        expect(result.notFollowingBack.map((u) => u.username)).toEqual(['bob']);
+    });
+
+    it('ignores malformed entries without a follower/following body', () => {
+        const result = analyzeX([{} as XRawEntry, follower('1')], [], new Map([['1', 'a']]));
+        expect(result.followers).toHaveLength(1);
+    });
+});
+
+describe('parseXArchive', () => {
+    it('parses the "window.YTD.*.part0 = [...]" wrapper', () => {
+        const text =
+            'window.YTD.follower.part0 = [ { "follower": { "accountId" : "123" } } ]';
+        const parsed = parseXArchive<XRawEntry>(text);
+        expect(parsed).toEqual([{ follower: { accountId: '123' } }]);
+    });
+
+    it('returns an empty array for a non-array body', () => {
+        const parsed = parseXArchive<XRawEntry>('window.YTD.follower.part0 = [];');
+        expect(parsed).toEqual([]);
+    });
+
+    it('throws an AnalysisError when no array is present', () => {
+        expect(() => parseXArchive('window.YTD.follower.part0 = null')).toThrow(
+            AnalysisError,
+        );
+    });
+
+    it('throws an AnalysisError on malformed JSON', () => {
+        expect(() => parseXArchive('window.YTD.follower.part0 = [ {bad} ]')).toThrow(
+            AnalysisError,
+        );
     });
 });
 

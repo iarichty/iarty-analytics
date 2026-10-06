@@ -58,6 +58,35 @@ export interface TikTokRawUser {
     UserName: string;
 }
 
+/**
+ * Raw Threads row.
+ *
+ * Threads connections are exported through Meta's Accounts Center, so the
+ * shape is identical to Instagram's (`string_list_data`). We alias it for
+ * clarity rather than inventing a parallel type.
+ */
+export type ThreadsRawUser = InstagramRawUser;
+
+/**
+ * Raw X (Twitter) archive entry (from `follower.js` / `following.js`).
+ *
+ * X archives only store the numeric `accountId`; usernames must be resolved
+ * from `account.js`, hence the `accountMap` argument to `analyzeX`.
+ */
+export interface XRawEntry {
+    follower?: { accountId: string; userLink?: string };
+    following?: { accountId: string; userLink?: string };
+}
+
+/** Raw X `account.js` entry (maps an account id to its username). */
+export interface XRawAccount {
+    account: {
+        accountId: string;
+        username?: string;
+        accountDisplayName?: string;
+    };
+}
+
 export interface TikTokRawData {
     'Profile And Settings'?: {
         Follower?: { FansList?: TikTokRawUser[] };

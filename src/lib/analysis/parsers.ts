@@ -1,5 +1,6 @@
 /**
- * Pure parsing / comparison logic for Instagram and TikTok data exports.
+ * Pure parsing / comparison logic for Instagram, TikTok, Threads and X
+ * (Twitter) data exports.
  *
  * Everything here is side-effect free so it can run inside a Web Worker and
  * be unit-tested in isolation. The UI layer only deals with `AnalysisResult`.
@@ -10,9 +11,15 @@ import type {
     ConnectionUser,
     InstagramRawUser,
     SnapshotDiff,
+    ThreadsRawUser,
     TikTokRawData,
     TikTokRawUser,
+    XRawAccount,
+    XRawEntry,
 } from './types';
+
+/** Every platform the insight/parser layer understands. */
+export type ParserPlatform = 'instagram' | 'tiktok' | 'threads' | 'x';
 
 /** Empty insight bundle, used when an export has no follower/following data. */
 export function emptyInsights(): AnalysisInsights {
@@ -66,11 +73,11 @@ export function instagramUsernameFromHref(href: string): string {
 /**
  * Canonical comparison key for a connection on a given platform.
  *
- * Instagram compares on the normalized profile URL (so the `/_u/` variants
- * match); TikTok has no stable URL in the export, so we fall back to the
- * lower-cased username.
+ * Instagram (and Threads, which shares its export shape) compares on the
+ * normalized profile URL (so the `/_u/` variants match); TikTok and X have no
+ * reliable URL in the export, so we compare the lower-cased username.
  */
-function comparisonKey(platform: 'instagram' | 'tiktok', user: ConnectionUser): string {
+function comparisonKey(platform: ParserPlatform, user: ConnectionUser): string {
     return platform === 'instagram'
         ? normalizeInstagramHref(user.href)
         : user.username.toLowerCase();
@@ -81,7 +88,7 @@ function comparisonKey(platform: 'instagram' | 'tiktok', user: ConnectionUser): 
  * following lists. Pure and worker-safe; shared by every platform.
  */
 export function computeInsights(
-    platform: 'instagram' | 'tiktok',
+    platform: ParserPlatform,
     followers: ConnectionUser[],
     following: ConnectionUser[],
 ): AnalysisInsights {
@@ -210,6 +217,138 @@ export function analyzeTikTok(data: TikTokRawData): AnalysisResult {
         ),
         insights: computeInsights('tiktok', followers, following),
     };
+}
+
+/**
+ * Parse Threads connections.
+ *
+ * Threads is exported via Meta's Accounts Center using the same
+ * `followers_*.json` / `following.json` structure as Instagram, so we reuse
+ * the Instagram mapping but build profile links against `threads.net` and
+ * compare by username.
+ */
+export function analyzeThreads(
+    followersRaw: ThreadsRawUser[],
+    followingRaw: ThreadsRawUser[],
+): AnalysisResult {
+    const mapUser = (raw: ThreadsRawUser): ConnectionUser => {
+        const entry = raw.string_list_data?.[0];
+        const username = entry?.value || instagramUsernameFromHref(entry?.href ?? '');
+        return {
+            username,
+            href: `https://www.threads.net/@${username}`,
+            // Threads timestamps are in seconds, like Instagram's.
+            timestamp: (entry?.timestamp ?? 0) * 1000,
+        };
+    };
+
+    const followers = followersRaw.map(mapUser);
+    const following = followingRaw.map(mapUser);
+
+    const followerKeys = new Set(followers.map((u) => comparisonKey('threads', u)));
+    const followingKeys = new Set(following.map((u) => comparisonKey('threads', u)));
+
+    return {
+        followers,
+        following,
+        nonFollowbacks: following.filter(
+            (u) => !followerKeys.has(comparisonKey('threads', u)),
+        ),
+        notFollowingBack: followers.filter(
+            (u) => !followingKeys.has(comparisonKey('threads', u)),
+        ),
+        insights: computeInsights('threads', followers, following),
+    };
+}
+
+/** Build a `accountId -> username` lookup from an X `account.js` export. */
+export function buildXAccountMap(accounts: XRawAccount[]): Map<string, string> {
+    const map = new Map<string, string>();
+    for (const entry of accounts) {
+        const id = entry?.account?.accountId;
+        const username = entry?.account?.username;
+        if (id && username) map.set(id, username);
+    }
+    return map;
+}
+
+/**
+ * Parse the X (Twitter) archive's follower/following lists.
+ *
+ * Entries only carry a numeric `accountId`, so we resolve usernames through
+ * `accountMap` (built from `account.js`). When an id cannot be resolved we
+ * fall back to the raw id, so nothing is silently dropped.
+ *
+ * @param followerRaw parsed contents of `follower.js`
+ * @param followingRaw parsed contents of `following.js`
+ * @param accountMap `accountId -> username` lookup (may be empty)
+ */
+export function analyzeX(
+    followerRaw: XRawEntry[],
+    followingRaw: XRawEntry[],
+    accountMap: Map<string, string> = new Map(),
+): AnalysisResult {
+    const mapUser = (
+        accountId: string | undefined,
+        userLink?: string,
+    ): ConnectionUser => {
+        const id = accountId ?? '';
+        const username = accountMap.get(id) ?? id;
+        return {
+            username,
+            href: userLink ?? `https://x.com/${username}`,
+            // X archives do not include a follow timestamp.
+            timestamp: 0,
+        };
+    };
+
+    const followers = followerRaw
+        .map((e) => e.follower)
+        .filter((e): e is NonNullable<XRawEntry['follower']> => Boolean(e))
+        .map((e) => mapUser(e.accountId, e.userLink));
+    const following = followingRaw
+        .map((e) => e.following)
+        .filter((e): e is NonNullable<XRawEntry['following']> => Boolean(e))
+        .map((e) => mapUser(e.accountId, e.userLink));
+
+    const followerNames = new Set(followers.map((u) => comparisonKey('x', u)));
+    const followingNames = new Set(following.map((u) => comparisonKey('x', u)));
+
+    return {
+        followers,
+        following,
+        nonFollowbacks: following.filter(
+            (u) => !followerNames.has(comparisonKey('x', u)),
+        ),
+        notFollowingBack: followers.filter(
+            (u) => !followingNames.has(comparisonKey('x', u)),
+        ),
+        insights: computeInsights('x', followers, following),
+    };
+}
+
+/**
+ * Parse the pseudo-JavaScript files shipped inside an X archive.
+ *
+ * X stores lists as `window.YTD.follower.part0 = [ ... ]` rather than plain
+ * JSON. We strip the assignment prefix and parse the array body.
+ */
+export function parseXArchive<T>(text: string): T[] {
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start === -1 || end === -1 || end < start) {
+        throw new AnalysisError(
+            'Could not read the X archive file. Make sure you uploaded the original ZIP.',
+        );
+    }
+    try {
+        const parsed = JSON.parse(text.slice(start, end + 1));
+        return Array.isArray(parsed) ? (parsed as T[]) : [];
+    } catch {
+        throw new AnalysisError(
+            'The X archive file could not be parsed. It may be corrupted or incomplete.',
+        );
+    }
 }
 
 /** Deduplicate a list of users by their comparison key, keeping the first. */

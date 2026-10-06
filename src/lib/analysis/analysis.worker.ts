@@ -10,11 +10,22 @@
  */
 import {
     analyzeInstagram,
+    analyzeThreads,
     analyzeTikTok,
+    analyzeX,
+    buildXAccountMap,
     mergeInstagramResults,
+    parseXArchive,
     AnalysisError,
 } from './parsers';
-import type { AnalysisResult, InstagramRawUser, TikTokRawData } from './types';
+import type {
+    AnalysisResult,
+    InstagramRawUser,
+    ThreadsRawUser,
+    TikTokRawData,
+    XRawAccount,
+    XRawEntry,
+} from './types';
 
 /** Loaded lazily so the (large) ZIP library is code-split out of the main bundle. */
 async function loadJSZip() {
@@ -22,7 +33,7 @@ async function loadJSZip() {
     return mod.default;
 }
 
-export type AnalysisPlatform = 'instagram' | 'tiktok';
+export type AnalysisPlatform = 'instagram' | 'tiktok' | 'threads' | 'x';
 
 export interface WorkerRequest {
     platform: AnalysisPlatform;
@@ -105,6 +116,100 @@ async function parseTikTokZip(
     return result;
 }
 
+/**
+ * Parse a Threads export.
+ *
+ * Threads connections arrive through Meta's Accounts Center export, which uses
+ * the *same* file layout as Instagram (`followers_1.json` + `following.json`).
+ * We reuse the Instagram file discovery but map to Threads profile links.
+ */
+async function parseThreadsZip(
+    buffer: ArrayBuffer,
+    onProgress: (stage: WorkerStage, percent: number) => void,
+): Promise<AnalysisResult> {
+    const JSZip = await loadJSZip();
+    onProgress('unzipping', 10);
+    const zip = await JSZip.loadAsync(buffer);
+    onProgress('unzipping', 50);
+
+    const followingFile = zip.file(FOLLOWING_FILE)[0];
+    const followersFiles = zip.file(FOLLOWERS_FILE);
+    if (!followingFile || followersFiles.length === 0) {
+        throw new AnalysisError(
+            'Invalid file structure. Upload the ZIP you exported from your Threads (Accounts Center) data download.',
+        );
+    }
+
+    onProgress('parsing', 55);
+    const followingRaw = JSON.parse(await followingFile.async('text'));
+    const following: ThreadsRawUser[] = followingRaw.relationships_following ?? [];
+
+    const followerChunks = await Promise.all(
+        followersFiles.map(async (file) => {
+            const parsed = JSON.parse(await file.async('text'));
+            return (Array.isArray(parsed) ? parsed : []) as ThreadsRawUser[];
+        }),
+    );
+    onProgress('parsing', 90);
+
+    const followers = followerChunks.flat();
+    const result = analyzeThreads(followers, following);
+    onProgress('parsing', 100);
+    return result;
+}
+
+/** X archive member files (paths vary between archive versions). */
+const X_FOLLOWER_FILE = /(^|\/)follower\.js$/i;
+const X_FOLLOWING_FILE = /(^|\/)following\.js$/i;
+const X_ACCOUNT_FILE = /(^|\/)account\.js$/i;
+
+/**
+ * Parse an X (Twitter) archive ZIP.
+ *
+ * The archive stores connections as `window.YTD.follower.part0 = [...]` and
+ * only records numeric account ids, so we resolve usernames from `account.js`.
+ */
+async function parseXZip(
+    buffer: ArrayBuffer,
+    onProgress: (stage: WorkerStage, percent: number) => void,
+): Promise<AnalysisResult> {
+    const JSZip = await loadJSZip();
+    onProgress('unzipping', 10);
+    const zip = await JSZip.loadAsync(buffer);
+    onProgress('unzipping', 50);
+
+    const followerFile = zip.file(X_FOLLOWER_FILE)[0];
+    const followingFile = zip.file(X_FOLLOWING_FILE)[0];
+    if (!followerFile || !followingFile) {
+        throw new AnalysisError(
+            "Could not find 'follower.js' / 'following.js'. Upload the ZIP downloaded from X (Settings → Your account → Download an archive).",
+        );
+    }
+
+    onProgress('parsing', 60);
+    const followerRaw = parseXArchive<XRawEntry>(await followerFile.async('text'));
+    const followingRaw = parseXArchive<XRawEntry>(await followingFile.async('text'));
+
+    // account.js is optional; without it we fall back to raw account ids.
+    let accountMap = new Map<string, string>();
+    const accountFile = zip.file(X_ACCOUNT_FILE)[0];
+    if (accountFile) {
+        try {
+            accountMap = buildXAccountMap(
+                parseXArchive<XRawAccount>(await accountFile.async('text')),
+            );
+        } catch {
+            // A malformed account.js shouldn't fail the whole analysis.
+            accountMap = new Map();
+        }
+    }
+    onProgress('parsing', 85);
+
+    const result = analyzeX(followerRaw, followingRaw, accountMap);
+    onProgress('parsing', 100);
+    return result;
+}
+
 // `self` is typed as Window under the DOM lib; cast once to the worker API.
 const worker = self as unknown as {
     onmessage: ((event: MessageEvent<WorkerRequest>) => void) | null;
@@ -116,10 +221,21 @@ worker.onmessage = async (event: MessageEvent<WorkerRequest>) => {
     const onProgress = (stage: WorkerStage, percent: number) =>
         worker.postMessage({ ok: 'progress', stage, percent });
     try {
-        const result =
-            platform === 'instagram'
-                ? await parseInstagramZip(buffer, onProgress)
-                : await parseTikTokZip(buffer, onProgress);
+        let result: AnalysisResult;
+        switch (platform) {
+            case 'instagram':
+                result = await parseInstagramZip(buffer, onProgress);
+                break;
+            case 'tiktok':
+                result = await parseTikTokZip(buffer, onProgress);
+                break;
+            case 'threads':
+                result = await parseThreadsZip(buffer, onProgress);
+                break;
+            case 'x':
+                result = await parseXZip(buffer, onProgress);
+                break;
+        }
         worker.postMessage({ ok: true, result });
     } catch (err) {
         const message =
